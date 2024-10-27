@@ -18,8 +18,8 @@
           "ci": {
             "type": "ec2"
           },
-          "cpu": 0.5,
-          "memory": 1,
+          "cpu": 2,
+          "memory": 4,
           "minInstances": 1,
           "maxInstances": 3,
           "buildCommand": "pnpm migrate:dev && pnpm migrate:deploy && pnpm build",
@@ -58,7 +58,7 @@
           "type": "rds",
           "engine": "postgres",
           "engineVersion": "13",
-          "instanceSize": "db.t4g.micro",
+          "instanceSize": "db.m5.large",
           "storage": 20,
           "private": false
         },
@@ -68,7 +68,7 @@
           "type": "elasticache",
           "engine": "redis",
           "engineVersion": "7.1",
-          "instanceSize": "cache.t3.micro",
+          "instanceSize": "cache.t3.small",
           "private": false
         }
       ]
