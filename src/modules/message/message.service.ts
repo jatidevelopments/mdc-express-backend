@@ -5,16 +5,11 @@ export const createMessage = async (
   message: string,
   character_id: string
 ) => {
-  console.log({ conversation_id, message, character_id });
-
-  // get all available conversations
-  const conversations = await prisma.conversation.findMany();
-
-  console.log({ conversations });
+  console.info('Creating message:', message, 'for conversation:', conversation_id);
 
   return await prisma.message.create({
     data: {
-      conversation_id: conversations[0].id,
+      conversation_id: conversation_id,
       message,
       character_id,
     },
@@ -22,6 +17,8 @@ export const createMessage = async (
 };
 
 export const updateConversation = async (conversation_id: string, message_id: string) => {
+  console.info('Updating conversation:', conversation_id, 'with message:', message_id);
+
   return await prisma.conversation.update({
     where: { id: conversation_id },
     data: {
