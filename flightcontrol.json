@@ -40,7 +40,7 @@
             },
             "PORT": 3000,
             "NODE_ENV": "production",
-            "CLIENT_SIDE_URL": "http://localhost:3000",
+            "CLIENT_SIDE_URL": "https://d3gjk8s525mt9p.cloudfront.net",
             "JWT_SECRET": "Rgi#TzTYC9^wmFqXCAB^$X3!6u#DoYwK",
             "JWT_EXPIRES_IN": "1h",
             "SESSION_EXPIRES_IN": "86400",
