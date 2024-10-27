@@ -23,7 +23,7 @@
           "minInstances": 1,
           "maxInstances": 3,
           "buildCommand": "pnpm build",
-          "startCommand": "pnpm start:prod",
+          "startCommand": "pnpm start",
           "envVariables": {
             "DATABASE_URL": {
               "fromService": {
