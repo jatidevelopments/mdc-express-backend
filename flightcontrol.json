@@ -54,7 +54,7 @@
           "name": "Redis Cache",
           "type": "elasticache",
           "engine": "redis",
-          "engineVersion": "6.x",
+          "engineVersion": "7.1",
           "instanceSize": "cache.t3.micro",
           "private": false
         }
