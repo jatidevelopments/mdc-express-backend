@@ -36,7 +36,19 @@
                 "id": "redis",
                 "value": "connectionString"
               }
-            }
+            },
+            "PORT": "3000",
+            "NODE_ENV": "production",
+            "CLIENT_SIDE_URL": "http://localhost:3000",
+            "JWT_SECRET": "Rgi#TzTYC9^wmFqXCAB^$X3!6u#DoYwK",
+            "JWT_EXPIRES_IN": "1h",
+            "SESSION_EXPIRES_IN": "86400",
+            "PASSWORD_RESET_TOKEN_EXPIRES_IN": "3600",
+            "SET_PASSWORD_TOKEN_EXPIRES_IN": "3600",
+            "SET_SESSION": "0",
+            "GOOGLE_CLIENT_ID": "",
+            "GOOGLE_CLIENT_SECRET": "",
+            "GOOGLE_REDIRECT_URI": ""
           }
         },
         {
