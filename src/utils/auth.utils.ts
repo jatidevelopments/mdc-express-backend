@@ -16,6 +16,10 @@ export interface GoogleTokenResponse {
 
 export interface GoogleTokensRequestParams {
   code: string;
+  client_id: string;
+  client_secret: string;
+  redirect_uri: string;
+  grant_type: string;
 }
 
 export type JwtPayload = {
@@ -93,6 +97,7 @@ export const verifyToken = async <
 export const generateRandomPassword = (length: number = 16): string => {
   return crypto.randomBytes(length).toString('hex');
 };
+
 export const fetchGoogleTokens = async (
   params: GoogleTokensRequestParams,
 ): Promise<GoogleTokenResponse> => {
@@ -102,11 +107,11 @@ export const fetchGoogleTokens = async (
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       code: params.code,
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      client_id: process.env.GOOGLE_CLIENT_ID || '', // Default to empty string if undefined
+      client_secret: process.env.GOOGLE_CLIENT_SECRET || '', // Default to empty string if undefined
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI || '', // Default to empty string if undefined
       grant_type: 'authorization_code',
-    }),
+    } as Record<string, string>), // Explicitly cast as Record<string, string>
   });
 
   if (!response.ok) {
@@ -116,6 +121,8 @@ export const fetchGoogleTokens = async (
   const data: GoogleTokenResponse = await response.json();
   return data;
 };
+
+
 export interface GoogleUserInfo {
   id: string; // User's unique Google ID
   email: string; // User's email address
@@ -134,8 +141,10 @@ export const getUserInfo = async (accessToken: string) => {
       headers: { Authorization: `Bearer ${accessToken}` },
     },
   );
+
   if (!userInfoResponse.ok) {
     throw new Error(`Error fetching user info`);
   }
+
   return userInfoResponse.json();
 };

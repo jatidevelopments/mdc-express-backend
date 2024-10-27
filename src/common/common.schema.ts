@@ -35,9 +35,7 @@ export const paginatedResponseSchema = z.object({
     .optional(),
 });
 
-export const mongoIdSchema = z.object({
-  id: z.string().refine((value) => validator.isMongoId(value)),
-});
+
 
 export const idSchema = z.object({
   id: z
@@ -63,5 +61,4 @@ export const passwordValidationSchema = (fieldName: string) =>
       'Password is too weak',
     );
 
-export type MongoIdSchemaType = z.infer<typeof mongoIdSchema>;
 export type IdSchemaType = z.infer<typeof idSchema>;

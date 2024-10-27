@@ -9,18 +9,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Enum definitions
+enum ROLE_ENUM {
+  DEFAULT_USER
+  SUPER_ADMIN
+}
+
+enum SOCIAL_ACCOUNT_ENUM {
+  FACEBOOK
+  GOOGLE
+  TWITTER
+}
+
 // User Management
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String
-  password  String
-  posts     Post[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                Int              @id @default(autoincrement())
+  email             String           @unique
+  name              String
+  username          String           @unique
+  password          String
+  role              ROLE_ENUM        @default(DEFAULT_USER)
+  passwordResetCode String?
+  socialAccounts    SocialAccount[]
+  posts             Post[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 
-  @@unique([id])
   @@index([id])
+}
+
+// Social Account Management
+model SocialAccount {
+  id           Int                @id @default(autoincrement())
+  accountType  SOCIAL_ACCOUNT_ENUM
+  accessToken  String
+  tokenExpiry  DateTime?
+  refreshToken String?
+  accountID    String
+  userId       Int
+  user         User               @relation(fields: [userId], references: [id])
 }
 
 // Blog Post
@@ -33,6 +60,5 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([id])
   @@index([id])
 }

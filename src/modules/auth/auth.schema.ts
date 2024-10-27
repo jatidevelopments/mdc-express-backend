@@ -5,14 +5,13 @@ import { baseCreateUser } from '../user/user.schema';
 
 export const resetPasswordSchema = z.object({
   userId: z
-    .string({ required_error: 'userId is required' })
-    .min(1)
-    .refine((value) => validator.isMongoId(value), 'userId must be valid'),
+    .number({ required_error: 'userId is required' })
+    .int()
+    .positive('userId must be a valid positive integer'),
   code: z
     .string({ required_error: 'code is required' })
-    .min(4)
-    .max(4)
-    .refine((value) => validator.isAlphanumeric(value), 'code must be valid'),
+    .length(4, 'Code must be exactly 4 characters')
+    .refine((value) => validator.isAlphanumeric(value), 'Code must be valid'),
   password: passwordValidationSchema('Password'),
   confirmPassword: passwordValidationSchema('Confirm password'),
 });
@@ -35,20 +34,16 @@ export const registerUserByEmailSchema = z
   })
   .merge(baseCreateUser)
   .strict()
-  .refine(({ password, confirmPassword }) => {
-    if (password !== confirmPassword) {
-      return false;
-    }
-
-    return true;
-  }, 'Password and confirm password must be same');
+  .refine(({ password, confirmPassword }) => password === confirmPassword, {
+    message: 'Password and confirm password must be the same',
+    path: ['confirmPassword'],
+  });
 
 export const loginUserByEmailSchema = baseCreateUser;
 
 export type RegisterUserByEmailSchemaType = z.infer<
   typeof registerUserByEmailSchema
 >;
-
 export type LoginUserByEmailSchemaType = z.infer<typeof loginUserByEmailSchema>;
 export type ChangePasswordSchemaType = z.infer<typeof changePasswordSchema>;
 export type ForgetPasswordSchemaType = z.infer<typeof forgetPasswordSchema>;

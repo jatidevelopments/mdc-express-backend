@@ -25,7 +25,6 @@ export const handleResetPassword = async (
   res: Response,
 ) => {
   await resetPassword(req.body);
-
   return successResponse(res, 'Password successfully reset');
 };
 
@@ -34,16 +33,14 @@ export const handleForgetPassword = async (
   res: Response,
 ) => {
   const user = await forgetPassword(req.body);
-
-  return successResponse(res, 'Code has been sent', { userId: user._id });
+  return successResponse(res, 'Code has been sent', { userId: user.id }); // Assume id is now of type number
 };
 
 export const handleChangePassword = async (
   req: Request<unknown, unknown, ChangePasswordSchemaType>,
   res: Response,
 ) => {
-  await changePassword((req.user as JwtPayload).sub, req.body);
-
+  await changePassword(Number((req.user as JwtPayload).sub), req.body); // Convert sub to a number
   return successResponse(res, 'Password successfully changed');
 };
 
@@ -52,13 +49,11 @@ export const handleRegisterUser = async (
   res: Response,
 ) => {
   const user = await registerUserByEmail(req.body);
-
-  return successResponse(res, 'User has been reigstered', user);
+  return successResponse(res, 'User has been registered', user);
 };
 
 export const handleLogout = async (_: Request, res: Response) => {
   res.cookie(AUTH_COOKIE_KEY, undefined, COOKIE_CONFIG);
-
   return successResponse(res, 'Logout successful');
 };
 
@@ -70,29 +65,27 @@ export const handleLoginByEmail = async (
   if (config.SET_SESSION) {
     res.cookie(AUTH_COOKIE_KEY, token, COOKIE_CONFIG);
   }
-  return successResponse(res, 'Login successful', { token: token });
+  return successResponse(res, 'Login successful', { token });
 };
 
 export const handleGetCurrentUser = async (req: Request, res: Response) => {
-  const user = req.user;
-
-  return successResponse(res, undefined, user);
+  return successResponse(res, undefined, req.user);
 };
+
 export const handleGoogleLogin = async (_: Request, res: Response) => {
   const googleAuthURL = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&scope=email profile`;
   res.redirect(googleAuthURL);
 };
+
 export const handleGoogleCallback = async (
   req: Request<unknown, unknown, unknown, GoogleCallbackQuery>,
   res: Response,
 ) => {
   const user = await googleLogin(req.query);
   if (!user) throw new Error('Failed to login');
-  res.cookie(
-    AUTH_COOKIE_KEY,
-    user.socialAccount?.[0]?.accessToken,
-    COOKIE_CONFIG,
-  );
+
+  // Replace `socialAccounts` with `socialAccount` to match UserType
+  res.cookie(AUTH_COOKIE_KEY, user.socialAccount?.[0]?.accessToken, COOKIE_CONFIG);
 
   return successResponse(res, 'Logged in successfully', {
     token: user.socialAccount?.[0]?.accessToken,

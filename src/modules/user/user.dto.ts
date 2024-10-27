@@ -1,11 +1,6 @@
 import z from 'zod';
 import { definePaginatedResponse } from '../../common/common.utils';
-import {
-  ROLE_ENUM,
-  RoleType,
-  SOCIAL_ACCOUNT_ENUM,
-  SocialAccountType,
-} from '../../enums';
+import { ROLE_ENUM, RoleType, SOCIAL_ACCOUNT_ENUM, SocialAccountType } from '../../enums';
 
 export const SocialAccountTypeZ = z.enum(
   Object.keys(SOCIAL_ACCOUNT_ENUM) as [SocialAccountType],
@@ -16,7 +11,7 @@ export const RoleTypeZ = z.enum(Object.keys(ROLE_ENUM) as [RoleType]);
 export const socialAccountInfoSchema = z.object({
   accountType: SocialAccountTypeZ,
   accessToken: z.string(),
-  tokenExpiry: z.date(),
+  tokenExpiry: z.date().optional(),
   refreshToken: z.string().optional(),
   accountID: z.string(),
 });
@@ -42,6 +37,6 @@ export const userSchema = userOutSchema.extend({
 export const usersPaginatedSchema = definePaginatedResponse(userOutSchema);
 
 export type UserModelType = z.infer<typeof userSchema>;
-export type UserType = z.infer<typeof userSchema> & { id: string; _id: string };
+export type UserType = z.infer<typeof userSchema> & { id: number };
 export type SocialAccountInfoType = z.infer<typeof socialAccountInfoSchema>;
 export type UserPaginatedType = z.infer<typeof usersPaginatedSchema>;

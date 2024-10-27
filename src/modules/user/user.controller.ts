@@ -1,16 +1,16 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { MongoIdSchemaType } from '../../common/common.schema';
 import { successResponse } from '../../utils/api.utils';
 import { generateRandomPassword } from '../../utils/auth.utils';
 import { CreateUserSchemaType, GetUsersSchemaType } from './user.schema';
 import { createUser, deleteUser, getUsers } from './user.services';
 
 export const handleDeleteUser = async (
-  req: Request<MongoIdSchemaType, unknown>,
+  req: Request<{ id: number }, unknown>,
   res: Response,
 ) => {
-  await deleteUser({ id: req.params.id });
+  const userId = req.params.id;
+  await deleteUser(userId);
 
   return successResponse(res, 'User has been deleted');
 };
@@ -25,6 +25,7 @@ export const handleCreateUser = async (
     ...data,
     password: generateRandomPassword(),
     role: 'DEFAULT_USER',
+    username: data.username,
   });
 
   return successResponse(
@@ -47,7 +48,6 @@ export const handleCreateSuperAdmin = async (
     username: 'super_admin',
     password: password,
     role: 'SUPER_ADMIN',
-    phoneNo: '123456789',
   });
 
   return successResponse(
@@ -62,12 +62,8 @@ export const handleGetUsers = async (
   req: Request<unknown, unknown, unknown, GetUsersSchemaType>,
   res: Response,
 ) => {
-  const { results, paginatorInfo } = await getUsers(
-    {
-      id: req.user.sub,
-    },
-    req.query,
-  );
+  const userId = req.user.sub;
+  const { results, paginatorInfo } = await getUsers(userId, req.query);
 
   return successResponse(res, undefined, { results, paginatorInfo });
 };
