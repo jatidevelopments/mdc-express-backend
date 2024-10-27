@@ -22,7 +22,7 @@
           "memory": 1,
           "minInstances": 1,
           "maxInstances": 3,
-          "buildCommand": "pnpm migrate:deploy && pnpm build",
+          "buildCommand": "pnpm migrate:dev && pnpm migrate:deploy && pnpm build",
           "startCommand": "pnpm start",
           "envVariables": {
             "DATABASE_URL": {
