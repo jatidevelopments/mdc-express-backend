@@ -23,6 +23,9 @@ enum SOCIAL_ACCOUNT_ENUM {
 
 // User Management
 model User {
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
   id                Int              @id @default(autoincrement())
   email             String           @unique
   name              String
@@ -30,16 +33,22 @@ model User {
   password          String
   role              ROLE_ENUM        @default(DEFAULT_USER)
   passwordResetCode String?
+
+  free_messages     Int?             @default(10)
+  is_premium        Boolean          @default(false)
+  klaviyo_id        String?          @unique
+
   socialAccounts    SocialAccount[]
-  posts             Post[]
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  conversations     Conversation[]
 
   @@index([id])
 }
 
 // Social Account Management
 model SocialAccount {
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
   id           Int                @id @default(autoincrement())
   accountType  SOCIAL_ACCOUNT_ENUM
   accessToken  String
@@ -50,15 +59,27 @@ model SocialAccount {
   user         User               @relation(fields: [userId], references: [id])
 }
 
-// Blog Post
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Conversation {
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 
-  @@index([id])
+  id              String     @id @default(uuid())
+  character_id    String
+  last_message_id String?
+  last_updated    DateTime   @updatedAt
+  messages        Message[]
+  user            User       @relation(fields: [userId], references: [id])
+  userId          Int        // Change to Int to match User model
+}
+
+model Message {
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  id              String       @id @default(uuid())
+  conversation_id String
+  message         String
+  character_id    String
+  created_at      DateTime     @default(now())
+  conversation    Conversation @relation(fields: [conversation_id], references: [id])
 }

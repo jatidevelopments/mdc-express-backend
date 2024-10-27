@@ -37,7 +37,8 @@
                 "value": "connectionString"
               }
             },
-            "PORT": "3000",
+            "PORT": 3000,
+            "healthCheckPath": "/api/healthcheck",
             "NODE_ENV": "production",
             "CLIENT_SIDE_URL": "http://localhost:3000",
             "JWT_SECRET": "Rgi#TzTYC9^wmFqXCAB^$X3!6u#DoYwK",
