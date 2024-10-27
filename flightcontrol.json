@@ -1,0 +1,64 @@
+{
+  "$schema": "https://app.flightcontrol.dev/schema.json",
+  "environments": [
+    {
+      "id": "production",
+      "name": "Production",
+      "region": "us-west-1",
+      "source": {
+        "branch": "main"
+      },
+      "services": [
+        {
+          "id": "typescript-backend",
+          "name": "TypeScript Backend",
+          "type": "web",
+          "target": { "type": "fargate" },
+          "buildType": "nixpacks",
+          "ci": {
+            "type": "ec2"
+          },
+          "cpu": 0.5,
+          "memory": 1,
+          "minInstances": 1,
+          "maxInstances": 3,
+          "buildCommand": "pnpm build",
+          "startCommand": "pnpm start",
+          "envVariables": {
+            "DATABASE_URL": {
+              "fromService": {
+                "id": "db",
+                "value": "dbConnectionString"
+              }
+            },
+            "REDIS_URL": {
+              "fromService": {
+                "id": "redis",
+                "value": "redisConnectionString"
+              }
+            }
+          }
+        },
+        {
+          "id": "db",
+          "name": "Database",
+          "type": "rds",
+          "engine": "postgres",
+          "engineVersion": "13",
+          "instanceSize": "db.t4g.micro",
+          "storage": 20,
+          "private": false
+        },
+        {
+          "id": "redis",
+          "name": "Redis Cache",
+          "type": "elasticache",
+          "engine": "redis",
+          "engineVersion": "6.x",
+          "instanceSize": "cache.t3.micro",
+          "private": false
+        }
+      ]
+    }
+  ]
+}
