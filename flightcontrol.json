@@ -24,6 +24,7 @@
           "maxInstances": 3,
           "buildCommand": "pnpm migrate:dev && pnpm migrate:deploy && pnpm build",
           "startCommand": "pnpm start",
+          "healthCheckPath": "/api/healthcheck",
           "envVariables": {
             "DATABASE_URL": {
               "fromService": {
@@ -38,7 +39,6 @@
               }
             },
             "PORT": 3000,
-            "healthCheckPath": "/api/healthcheck",
             "NODE_ENV": "production",
             "CLIENT_SIDE_URL": "http://localhost:3000",
             "JWT_SECRET": "Rgi#TzTYC9^wmFqXCAB^$X3!6u#DoYwK",
