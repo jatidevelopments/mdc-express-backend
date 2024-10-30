@@ -58,7 +58,7 @@
           "type": "rds",
           "engine": "postgres",
           "engineVersion": "13",
-          "instanceSize": "t4g.medium",
+          "instanceSize": "db.m5.large",
           "storage": 50,
           "private": false
         },
