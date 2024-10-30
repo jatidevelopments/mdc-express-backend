@@ -1,5 +1,3 @@
-// schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -23,63 +21,232 @@ enum SOCIAL_ACCOUNT_ENUM {
 
 // User Management
 model User {
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  createdAt                 DateTime         @default(now())
+  updatedAt                 DateTime         @updatedAt
 
-  id                Int              @id @default(autoincrement())
-  email             String           @unique
-  name              String
-  username          String           @unique
-  password          String
-  role              ROLE_ENUM        @default(DEFAULT_USER)
-  passwordResetCode String?
+  id                        Int              @id @default(autoincrement())
+  email                     String           @unique
+  username                  String           @unique
+  name                      String
+  password                  String
+  role                      ROLE_ENUM        @default(DEFAULT_USER)
+  google_oauth              GoogleOAuth?
+  password_reset            PasswordReset?
 
-  free_messages     Int?             @default(10)
-  is_premium        Boolean          @default(false)
-  klaviyo_id        String?          @unique
+  is_premium                Boolean          @default(false)
+  free_messages             Int              @default(10)
+  tokens_amount             Decimal?
+  free_messages_refill_scheduled_for DateTime?
+  subscription_type         String?
+  user_educated_on_inchat_images Boolean
+  klaviyo_id                String?          @unique
 
-  socialAccounts    SocialAccount[]
-  conversations     Conversation[]
+  utm_on_registration       Json?
+  utm_on_purchase           Json?
+  registration_ip           String
+  registration_user_agent   String
+  privacy_and_terms_accepted DateTime?
+  age_policy_accepted       DateTime?
+  gender                    String?
+  cancelation_reason        String?
+  last_payment              DateTime?
+  stripe_customer_id        String?
+  pending_payment           Boolean
+  banned                    Boolean
+  show_dispute_popup        Boolean
+  chat_features_explained   Boolean
+  first_inchat_paywall_seen Boolean
+  hard_image_explanation_seen Boolean
+  email_quality             String?
+  country                   String?
+  millionverifier_result    String?
+  is_tester                 Boolean
+  referrer                  String?
+  is_cancelation_initiated  Boolean
+  create_char_funnel_options Json?
+  is_unverified             Boolean
+  fp_ref_id                 String?
+
+  socialAccounts            SocialAccount[]
+  conversations             Conversation[]
+  paymentSubscriptions      PaymentSubscription[]
+  dreamCoinsLogs            DreamCoinsLog[]
 
   @@index([id])
 }
 
+model GoogleOAuth {
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  userId   Int     @unique
+  user     User    @relation(fields: [userId], references: [id])
+}
+
+model PasswordReset {
+  id         Int      @id @default(autoincrement())
+  token      String
+  expiration DateTime
+  used       Boolean
+  userId     Int      @unique
+  user       User     @relation(fields: [userId], references: [id])
+}
+
 // Social Account Management
 model SocialAccount {
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
 
-  id           Int                @id @default(autoincrement())
+  id           Int              @id @default(autoincrement())
   accountType  SOCIAL_ACCOUNT_ENUM
   accessToken  String
   tokenExpiry  DateTime?
   refreshToken String?
   accountID    String
   userId       Int
-  user         User               @relation(fields: [userId], references: [id])
+  user         User             @relation(fields: [userId], references: [id])
 }
 
+// Conversation Management
 model Conversation {
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
-  id              String     @id @default(uuid())
-  character_id    String
-  last_message_id String?
-  last_updated    DateTime   @updatedAt
-  messages        Message[]
-  user            User       @relation(fields: [userId], references: [id])
-  userId          Int        // Change to Int to match User model
+  id                Int              @id @default(autoincrement())
+  character_id      Int
+  greeting          String
+  system_prompt     String?
+  last_message      String?
+  last_time_used_at DateTime?
+  model             String
+  user              User             @relation(fields: [userId], references: [id])
+  userId            Int
+  messages          Message[]
+  character_id_2_deleteme Int?
+  user_id_if_archived Int?
+
+  @@index([userId])
 }
 
 model Message {
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  createdAt                   DateTime         @default(now())
+  updatedAt                   DateTime         @updatedAt
 
-  id              String       @id @default(uuid())
-  conversation_id String
-  message         String
-  character_id    String
-  created_at      DateTime     @default(now())
-  conversation    Conversation @relation(fields: [conversation_id], references: [id])
+  id                          Int              @id @default(autoincrement())
+  conversation_id             Int
+  content                     String
+  role                        String
+  index                       Int
+  message_cost_in_tokens      Decimal?
+  request_cost_in_tokens      Int
+  total_completion_cost_in_tokens Int
+  is_image                    Boolean
+  is_image_request            Boolean
+  image_id                    Int?
+  liked                       Boolean
+  disliked                    Boolean
+  dislike_feedback            String?
+  image_generation_duration   Decimal?
+  response_generation_time    Decimal?
+  tts_s3_url                  String?
+  conversation                Conversation     @relation(fields: [conversation_id], references: [id])
+}
+
+// Character Management
+model Character {
+  createdAt                  DateTime         @default(now())
+  
+  id                         Int              @id @default(autoincrement())
+  name                       String
+  profile_images             String[]         // Assuming [image] is an array of image URLs
+  system_prompt              String
+  personality                String
+  scenario                   String
+  greeting                   String
+  description                String
+  model                      String
+  hidden                     Boolean
+  ethnicity                  String
+  gender                     String
+  skin_color                 String
+  body_type                  String
+  breast_size                String
+  eyes_color                 String
+  hair_style                 String
+  user_id                    Int
+  user_generated_character   Boolean
+  butt_size                  String
+  outfit                     String
+  agreebleness               String
+  sexual_dynamics            String
+  extraversion               String
+  power_dynamics             String
+  quirks                     String
+  occupation                 String
+  hobbies                    String
+  user_role                  String
+  char_role                  String
+  setting                    String
+  sd_prompt_embedding        String
+  default_style              String
+  funnel                     String
+  session_id                 String
+  quick_reply                String
+  tags                       String[]
+  faceswap_image_s3          String
+  creation_duration          Int
+  archived                   Boolean
+  species                    String
+  body_type_to_show          String
+
+  @@index([user_id])
+}
+
+// Payment Management
+model PaymentSubscription {
+  createdAt                      DateTime         @default(now())
+
+  id                             Int              @id @default(autoincrement())
+  user_id                        Int
+  stripe_products_id             Int
+  next_recurring_payment_date    DateTime?
+  card_hash                      String
+  card_expiry_date               String
+  retention_months               Int
+  status                         String
+  recovery_payment_retries       Int
+  next_recovery_payment_retry_date DateTime?
+  price_net                      Int
+  price_gross                    Int
+  monthly_billing_cycle          Int
+  monthly_tokens                 Int
+  is_cancelation_initiated       Boolean
+  user                           User             @relation(fields: [user_id], references: [id])
+}
+
+// Miscellaneous Management
+model DebugInfo {
+  createdAt     DateTime         @default(now())
+  id            Int              @id @default(autoincrement())
+  source        String
+  info          String
+  data          String
+}
+
+model DreamCoinsLog {
+  createdAt     DateTime         @default(now())
+  id            Int              @id @default(autoincrement())
+  description   String
+  amount        Decimal
+  payload       Json
+  user_id       Int
+  user          User             @relation(fields: [user_id], references: [id])
+}
+
+model FunnelStatistics {
+  createdAt     DateTime         @default(now())
+  id            Int              @id @default(autoincrement())
+  statistics    Json
+  type          String
+  session_id    String
 }

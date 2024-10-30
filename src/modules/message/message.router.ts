@@ -1,4 +1,4 @@
-// message.router.ts
+import { canAccess } from '../../middlewares/can-access.middleware';
 import MagicRouter from '../../openapi/magic-router';
 import { handleSendMessage } from './message.controller';
 import { sendMessageSchema } from './message.schema';
@@ -10,6 +10,7 @@ const messageRouter = new MagicRouter(MESSAGE_ROUTER_ROOT);
 messageRouter.post(
   '/sendMessage',
   { requestType: { body: sendMessageSchema } },
+  canAccess(),
   handleSendMessage,
 );
 

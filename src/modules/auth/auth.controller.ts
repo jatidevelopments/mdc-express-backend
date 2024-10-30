@@ -62,9 +62,11 @@ export const handleLoginByEmail = async (
   res: Response,
 ) => {
   const token = await loginUserByEmail(req.body);
+
   if (config.SET_SESSION) {
     res.cookie(AUTH_COOKIE_KEY, token, COOKIE_CONFIG);
   }
+
   return successResponse(res, 'Login successful', { token });
 };
 
